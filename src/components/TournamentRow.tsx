@@ -1,34 +1,56 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
-import theme from '../theme';
+
+import Button from './Button';
+import Paragraph from './Paragraph';
+import { useAppDispatch } from '../hooks';
 import { Tournament } from '../reducers/tournaments';
+import { modalItemSelector } from '../selectors/tournaments';
+import { setModalItem, undoEdit } from '../actions/tournaments';
 
 const StyledView = styled.View`
-  height: 100px;
+  height: 150px;
   margin-bottom: 10px;
-`;
-
-const StyledText = styled.Text`
-  color: ${theme.palette.text.primary};
 `;
 
 interface TournamentsRowProps {
   item: Tournament;
+  showModal: () => void;
 }
 
 const TournamentRow: React.FC<TournamentsRowProps> = ({
   item,
+  showModal,
 }): JSX.Element => {
+  const appDispatch = useAppDispatch();
+
+  const modalItem = useSelector(modalItemSelector);
+
+  const onEditPress = async () => {
+    showModal();
+    appDispatch(setModalItem(item));
+  };
+
+  const onUndoPress = () => {
+    appDispatch(undoEdit(item.id));
+  };
   return (
     <StyledView>
-      <StyledText>Game: {item.game}</StyledText>
-      <StyledText>Name: {item.name}</StyledText>
-      <StyledText>Organizer: {item.organizer}</StyledText>
-      <StyledText>
+      <Paragraph>Game: {item.game}</Paragraph>
+      <Paragraph>Name: {item.name}</Paragraph>
+      <Paragraph>Organizer: {item.organizer}</Paragraph>
+      <Paragraph>
         Participants: current-{item.participants.current} max-
         {item.participants.max}
-      </StyledText>
-      <StyledText>Start date: {item.startDate}</StyledText>
+      </Paragraph>
+      <Paragraph>Start date: {item.startDate}</Paragraph>
+
+      {item.id === modalItem.id ? (
+        <Button onPress={onUndoPress}>UNDO CHANGES</Button>
+      ) : (
+        <Button onPress={onEditPress}>EDIT</Button>
+      )}
     </StyledView>
   );
 };

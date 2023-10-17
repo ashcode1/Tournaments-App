@@ -6,3 +6,5 @@ export const tournamentsPageSelector = (state: RootState) =>
   state.tournaments.page;
 export const moreTournamentsToFetchSelector = (state: RootState) =>
   state.tournaments.moreToFetch;
+export const modalItemSelector = (state: RootState) =>
+  state.tournaments.modalItem;

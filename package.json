@@ -23,6 +23,7 @@
     "pretty-quick": "^3.1.3",
     "react": "18.2.0",
     "react-native": "0.72.0",
+    "react-native-modal-prompt": "^0.0.2",
     "react-redux": "^8.0.2",
     "redux": "^4.2.0",
     "redux-thunk": "^2.4.1",
