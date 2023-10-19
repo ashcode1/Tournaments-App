@@ -1,10 +1,12 @@
 import { Tournament } from '../../reducers/tournaments';
 import {
+  DELETE_TOURNAMENT,
   EDIT_TOURNAMENT,
   GET_TOURNAMENTS_FAILURE,
   GET_TOURNAMENTS_REQUEST,
   GET_TOURNAMENTS_SUCCESS,
   SET_MODAL_ITEM,
+  UNDO_DELETE,
   UNDO_EDIT,
 } from '../../actions/tournaments';
 
@@ -32,9 +34,18 @@ interface EditTournament {
   payload: { id: string; value: string };
 }
 
+interface DeleteTournament {
+  type: typeof DELETE_TOURNAMENT;
+  payload: { id: string };
+}
+
 interface UndoEdit {
   type: typeof UNDO_EDIT;
   payload: { id: string };
+}
+
+interface UndoDelete {
+  type: typeof UNDO_DELETE;
 }
 
 export type TournamentActions =
@@ -43,4 +54,6 @@ export type TournamentActions =
   | GetTournamentsFailure
   | SetModalItem
   | EditTournament
-  | UndoEdit;
+  | DeleteTournament
+  | UndoEdit
+  | UndoDelete;

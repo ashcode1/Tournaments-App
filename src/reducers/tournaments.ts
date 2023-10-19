@@ -1,8 +1,10 @@
 import { TournamentActions } from '../types/actionTypes/tournamentActionsTypes';
 import {
+  DELETE_TOURNAMENT,
   EDIT_TOURNAMENT,
   GET_TOURNAMENTS_SUCCESS,
   SET_MODAL_ITEM,
+  UNDO_DELETE,
   UNDO_EDIT,
 } from '../actions/tournaments';
 
@@ -15,14 +17,17 @@ export interface Tournament {
   startDate: string;
 }
 
+type DeleteItem = Tournament & { index: number };
+
 type TournamentsState = {
   tournaments: Array<Tournament>;
   page: number;
   moreToFetch: boolean;
   modalItem: Tournament;
+  deleteItem: DeleteItem;
 };
 
-const initalModalItem = {
+const initalItem = {
   game: '',
   id: '',
   name: '',
@@ -35,7 +40,8 @@ const initialState = {
   tournaments: null,
   page: 1,
   moreToFetch: true,
-  modalItem: initalModalItem,
+  modalItem: initalItem,
+  deleteItem: initalItem,
 };
 
 export default function tournaments(
@@ -57,6 +63,7 @@ export default function tournaments(
               action.payload.page === 1
                 ? action.payload.data
                 : state.tournaments?.concat(action.payload.data),
+            deleteItem: { ...initalItem },
           };
     case SET_MODAL_ITEM:
       return {
@@ -80,7 +87,27 @@ export default function tournaments(
           action.payload.id,
           state.modalItem
         ),
-        modalItem: initalModalItem,
+        modalItem: { ...initalItem },
+      };
+    case DELETE_TOURNAMENT:
+      return {
+        ...state,
+        tournaments: deleteItemById(state.tournaments, action.payload.id),
+        deleteItem: {
+          ...state.modalItem,
+          index: getIndexById(state.tournaments, action.payload.id),
+        },
+        modalItem: { ...initalItem },
+      };
+    case UNDO_DELETE:
+      return {
+        ...state,
+        tournaments: insertItemByIndex(
+          state.tournaments,
+          state.deleteItem.index,
+          state.deleteItem
+        ),
+        deleteItem: { ...initalItem },
       };
     default:
       return state;
@@ -111,11 +138,6 @@ function updateTournamentsById(
   return newArray;
 }
 
-function getItemById(array: Array<Tournament>, id: string) {
-  const foundItem = array.find((item) => item.id === id);
-  return foundItem;
-}
-
 function insertItemById(
   array: Array<Tournament>,
   id: string,
@@ -124,6 +146,25 @@ function insertItemById(
   const newArray = array.map((item) => {
     return item.id === id ? { ...originalItem } : item;
   });
-
   return newArray;
+}
+
+function insertItemByIndex(
+  array: Array<Tournament>,
+  index: number,
+  originalItem: DeleteItem
+) {
+  let newArray = array.map((item) => item);
+  newArray.splice(index, 0, { ...originalItem });
+  return newArray;
+}
+
+function deleteItemById(array: Array<Tournament>, id: string) {
+  const filteredArray = array.filter((item) => item.id !== id);
+  return filteredArray;
+}
+
+function getIndexById(array: Array<Tournament>, id: string) {
+  const index = array.findIndex((item) => item.id === id);
+  return index;
 }

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
 
 import Button from './Button';
-import Paragraph from './Paragraph';
+import BodyText from './BodyText';
 import { useAppDispatch } from '../hooks';
 import { Tournament } from '../reducers/tournaments';
 import { modalItemSelector } from '../selectors/tournaments';
@@ -17,41 +17,51 @@ const StyledView = styled.View`
 interface TournamentsRowProps {
   item: Tournament;
   showModal: () => void;
+  showDeleteModal: () => void;
 }
 
 const TournamentRow: React.FC<TournamentsRowProps> = ({
   item,
   showModal,
+  showDeleteModal,
 }): JSX.Element => {
-  const appDispatch = useAppDispatch();
-
   const modalItem = useSelector(modalItemSelector);
+
+  const appDispatch = useAppDispatch();
 
   const onEditPress = async () => {
     showModal();
     appDispatch(setModalItem(item));
   };
 
-  const onUndoPress = () => {
+  const onUndoEditPress = () => {
     appDispatch(undoEdit(item.id));
   };
-  return (
-    <StyledView>
-      <Paragraph>Game: {item.game}</Paragraph>
-      <Paragraph>Name: {item.name}</Paragraph>
-      <Paragraph>Organizer: {item.organizer}</Paragraph>
-      <Paragraph>
-        Participants: current-{item.participants.current} max-
-        {item.participants.max}
-      </Paragraph>
-      <Paragraph>Start date: {item.startDate}</Paragraph>
 
-      {item.id === modalItem.id ? (
-        <Button onPress={onUndoPress}>UNDO CHANGES</Button>
-      ) : (
-        <Button onPress={onEditPress}>EDIT</Button>
-      )}
-    </StyledView>
+  const onDeletePress = () => {
+    showDeleteModal();
+    appDispatch(setModalItem(item));
+  };
+  return (
+    <>
+      <StyledView>
+        <BodyText>Game: {item.game}</BodyText>
+        <BodyText>Name: {item.name}</BodyText>
+        <BodyText>Organizer: {item.organizer}</BodyText>
+        <BodyText>
+          Participants: current-{item.participants.current} max-
+          {item.participants.max}
+        </BodyText>
+        <BodyText>Start date: {item.startDate}</BodyText>
+
+        {item.id === modalItem.id ? (
+          <Button onPress={onUndoEditPress}>UNDO CHANGES</Button>
+        ) : (
+          <Button onPress={onEditPress}>EDIT</Button>
+        )}
+        <Button onPress={onDeletePress}>DELETE</Button>
+      </StyledView>
+    </>
   );
 };
 

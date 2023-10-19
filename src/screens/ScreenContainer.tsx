@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 
 import H4 from '../components/H4';
 import Button from '../components/Button';
 import Spacer from '../components/Spacer';
 import Container from '../components/Container';
-import Paragraph from '../components/Paragraph';
+import BodyText from '../components/BodyText';
 
 const StyledView = styled.View`
   flex: 1;
@@ -22,6 +22,7 @@ interface ScreenContainerProps {
   noDataText: string;
   onRetryPress: () => void;
   error: boolean | string | '';
+  headerContent: ReactElement | null;
   children: ReactElement | null;
 }
 
@@ -33,25 +34,28 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
   noDataText,
   onRetryPress,
   error,
+  headerContent,
   children,
 }): JSX.Element => {
   return (
     <Container>
+      <StatusBar animated={true} barStyle="light-content" />
       <H4>{screenTitle}</H4>
+      {headerContent}
       <>
         {error ? (
           <StyledView>
-            <Paragraph>Something went wrong.</Paragraph>
+            <BodyText>Something went wrong.</BodyText>
           </StyledView>
         ) : noData ? (
           <StyledView>
-            <Paragraph>{noDataText}</Paragraph>
+            <BodyText>{noDataText}</BodyText>
             <Spacer />
             <Button onPress={onRetryPress}>RETRY</Button>
           </StyledView>
         ) : loading ? (
           <StyledView>
-            <Paragraph>{loadingText}</Paragraph>
+            <BodyText>{loadingText}</BodyText>
             <Spacer />
             <ActivityIndicator />
           </StyledView>

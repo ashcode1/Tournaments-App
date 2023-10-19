@@ -6585,11 +6585,6 @@ react-native-flipper@^0.212.0:
   resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.212.0.tgz#b3fdd47676ecd09a25edd77a1466acace6276762"
   integrity sha512-bDRfIgE3v/jjEEdnvGP0T6maDD+bXhDAQ/SZUYTKd/CQ6YIU1c0EF+e0urU62LNMv6XEFQKz226McdddyVhYZA==
 
-react-native-modal-prompt@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-modal-prompt/-/react-native-modal-prompt-0.0.2.tgz#615a7907f5ed41ce43e490293911d14c4380ac51"
-  integrity sha512-WjwE8zjf/3xOzuhApoihV10ROJ5Gw+40oQHuLVEMzz7M7H8LCVO39IkuauFUazqHpGAd7IJTKxEMQirWNYgVUA==
-
 react-native@0.72.0:
   version "0.72.0"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.72.0.tgz"

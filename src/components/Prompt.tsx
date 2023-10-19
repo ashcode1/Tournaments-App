@@ -1,76 +1,178 @@
-import React, { Dispatch, SetStateAction } from 'react';
-import RNMPrompt from 'react-native-modal-prompt';
-import { Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, StyleSheet } from 'react-native';
+import styled from 'styled-components/native';
+
+import theme from '../theme';
+import Input from './Input';
+import BodyText from './BodyText';
+
+const PromptContainer = styled.View`
+  flex: 1;
+`;
+
+const PromptMask = styled.View`
+  background: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+`;
+
+const PromptContent = styled.View`
+  background: ${theme.palette.background.body};
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 300px;
+  margin-left: -150px;
+  border-radius: 5px;
+  align-items: center;
+  overflow: hidden;
+`;
+
+const PromptTitleContainer = styled.View`
+  padding-top: 20px;
+`;
+
+const PromptBody = styled.View`
+  padding-horizontal: 10px;
+  padding-vertical: 20px;
+  width: 100%;
+`;
+
+const ValidationContainer = styled.View`
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-right: 5px;
+  margin-top: 5px;
+`;
+
+const PromptFooter = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  border-top-width: 1px;
+  border-color: ${theme.palette.primary.main};
+`;
+
+const PromptAction = styled.TouchableOpacity`
+  flex: 1;
+  align-items: center;
+  padding-vertical: 10px;
+  border-right-width: 1px;
+  border-color: ${theme.palette.primary.main};
+  position: relative;
+  left: 1px;
+`;
+
+interface Operation {
+  text: string;
+  onPress?: (value: string) => void;
+  color?: string;
+}
 
 interface PromptProps {
-  visible: boolean;
-  setVisible: Dispatch<SetStateAction<boolean>>;
-  defaultValue: string;
-  onCancel: () => void;
-  onSave: (value: string) => void;
+  visible?: boolean;
+  title: string;
+  hasTextInput?: boolean;
+  defaultValue?: string;
+  placeholder?: string;
+  operation?: Operation[];
+  maxLength?: number;
+  validationText?: string;
 }
 
 const Prompt: React.FC<PromptProps> = ({
-  visible,
-  setVisible,
-  defaultValue,
-  onCancel,
-  onSave,
-}): JSX.Element => {
-  const validateText = (text: string) => {
-    // Remove leading and trailing spaces for validation
-    const trimmedText = text.trim();
+  visible = false,
+  title,
+  hasTextInput,
+  defaultValue = '',
+  placeholder = '',
+  operation = [],
+  maxLength = 100,
+  validationText,
+}) => {
+  const [isVisible, setIsVisible] = useState(visible);
+  const [value, setValue] = useState(defaultValue);
 
-    // Check if the text consists of Latin letters, numbers, and spaces
-    const regex = /^[A-Za-z0-9\s]+$/;
+  useEffect(() => {
+    setIsVisible(visible);
+    setValue(defaultValue);
+  }, [visible, defaultValue]);
 
-    // Check if the input is not empty and matches the regex
-    const isValid = trimmedText.length > 0 && regex.test(trimmedText);
-
-    return isValid;
+  const requestClose = () => {
+    setIsVisible(false);
   };
 
-  const onCancelPress = () => {
-    onCancel();
-    return;
-  };
-
-  const onUpdatePress = (value: string) => {
-    console.log('is valid? :', validateText(value));
-    if (validateText(value) === true) {
-      onSave(value);
-      setVisible(false);
-    } else {
-      Alert.alert(
-        'Invalid',
-        `The tournament name must 
-ONLY contain  
-Latin letters, numbers, and spaces, 
-not an empty name or only spaces`
-      );
-      return false;
+  const operationPress = (fn?: (value: string) => boolean | void) => {
+    const bool = fn && fn(value);
+    if (bool !== false) {
+      setIsVisible(false);
     }
   };
+
+  const onChangeText = (text: string) => {
+    setValue(text);
+  };
+
   return (
-    <>
-      <RNMPrompt
-        visible={visible}
-        title="Type below to edit name"
-        defaultValue={defaultValue}
-        operation={[
-          {
-            text: 'Cancel',
-            color: '#000',
-            onPress: onCancelPress,
-          },
-          {
-            text: 'Update',
-            onPress: onUpdatePress,
-          },
-        ]}
-      />
-    </>
+    <Modal visible={isVisible} onRequestClose={requestClose}>
+      <PromptContainer>
+        <PromptMask />
+        <PromptContent>
+          <PromptTitleContainer>
+            <BodyText size={18}>{title}</BodyText>
+          </PromptTitleContainer>
+          <PromptBody>
+            {hasTextInput ? (
+              <>
+                <Input
+                  style={styles.promptInput}
+                  defaultValue={defaultValue}
+                  placeholder={placeholder}
+                  onChangeText={onChangeText}
+                  maxLength={maxLength}
+                  autoFocus={true}
+                />
+                {validationText ? (
+                  <ValidationContainer>
+                    <BodyText style={{ color: theme.palette.attention.main }}>
+                      {validationText}
+                    </BodyText>
+                  </ValidationContainer>
+                ) : null}
+              </>
+            ) : null}
+          </PromptBody>
+          <PromptFooter>
+            {operation.length > 0 &&
+              operation.map((item, index) => (
+                <PromptAction
+                  key={index}
+                  onPress={() => operationPress(item.onPress)}
+                >
+                  <BodyText color={theme.palette.primary.main} size={18}>
+                    {item.text}
+                  </BodyText>
+                </PromptAction>
+              ))}
+          </PromptFooter>
+        </PromptContent>
+      </PromptContainer>
+    </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  promptInput: {
+    height: 46,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: theme.palette.primary.main,
+    borderRadius: 3,
+    paddingHorizontal: 10,
+  },
+});
 
 export default Prompt;

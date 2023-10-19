@@ -8,3 +8,5 @@ export const moreTournamentsToFetchSelector = (state: RootState) =>
   state.tournaments.moreToFetch;
 export const modalItemSelector = (state: RootState) =>
   state.tournaments.modalItem;
+export const deleteItemSelector = (state: RootState) =>
+  state.tournaments.deleteItem;

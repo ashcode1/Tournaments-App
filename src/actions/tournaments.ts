@@ -46,3 +46,15 @@ export const UNDO_EDIT = 'UNDO_EDIT';
 export const undoEdit = (id: string) => (appDispatch: AppDispatch) => {
   appDispatch({ type: UNDO_EDIT, payload: { id } });
 };
+
+export const DELETE_TOURNAMENT = 'DELETE_TOURNAMENT';
+
+export const deleteTournament = (id: string) => (appDispatch: AppDispatch) => {
+  appDispatch({ type: DELETE_TOURNAMENT, payload: { id } });
+};
+
+export const UNDO_DELETE = 'UNDO_DELETE';
+
+export const undoDelete = () => (appDispatch: AppDispatch) => {
+  appDispatch({ type: UNDO_DELETE });
+};

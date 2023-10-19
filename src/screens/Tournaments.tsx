@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Dimensions, FlatList, RefreshControl } from 'react-native';
+import { FlatList, RefreshControl } from 'react-native';
 
 import theme from '../theme';
 import TournamentRow from '../components/TournamentRow';
@@ -11,20 +11,28 @@ import { createLoadingSelector } from '../selectors/loading';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import {
   GET_TOURNAMENTS,
+  deleteTournament,
   editTournament,
   getTournaments,
+  undoDelete,
   undoEdit,
 } from '../actions/tournaments';
 import {
+  deleteItemSelector,
   modalItemSelector,
   moreTournamentsToFetchSelector,
   tournamentsPageSelector,
   tournamentsSelector,
 } from '../selectors/tournaments';
-import Prompt from '../components/Prompt';
+import EditPrompt from '../components/EditPrompt';
+import DeletePrompt from '../components/DeletePrompt';
+import Button from '../components/Button';
 
 const Tournaments: React.FC = (): JSX.Element => {
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
+  const [deleteModalVisible, setDeleteModalVisible] =
+    React.useState<boolean>(false);
+
   const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 
   const appDispatch = useAppDispatch();
@@ -35,10 +43,23 @@ const Tournaments: React.FC = (): JSX.Element => {
   const moreToFetch = useAppSelector(moreTournamentsToFetchSelector);
   const isLoading = useAppSelector(createLoadingSelector([GET_TOURNAMENTS]));
   const error = useAppSelector(errorSelector([GET_TOURNAMENTS]));
+  const deleteItem = useAppSelector(deleteItemSelector);
 
   const onCancel = () => appDispatch(undoEdit(modalItem.id));
+
+  const onDelete = () => {
+    appDispatch(deleteTournament(modalItem.id));
+  };
+
+  const onUndoDelete = () => {
+    appDispatch(undoDelete());
+  };
+
   const onSave = (value: string) =>
     appDispatch(editTournament(modalItem.id, value));
+
+  const showModal = () => setModalVisible(true);
+  const showDeleteModal = () => setDeleteModalVisible(true);
 
   const limit = 10;
 
@@ -81,29 +102,36 @@ const Tournaments: React.FC = (): JSX.Element => {
       noDataText="No tournaments found."
       onRetryPress={onRetryPress}
       error={error}
+      headerContent={
+        deleteItem.id !== '' ? (
+          <Button onPress={onUndoDelete}>UNDO DELETE</Button>
+        ) : null
+      }
     >
       <>
-        <Prompt
+        <EditPrompt
           visible={modalVisible}
           setVisible={setModalVisible}
           defaultValue={modalItem.name}
           onSave={onSave}
           onCancel={onCancel}
         />
+        <DeletePrompt
+          visible={deleteModalVisible}
+          setVisible={setDeleteModalVisible}
+          onDelete={onDelete}
+          onCancel={onCancel}
+        />
         {tournaments?.length > 0 ? (
           <FlatList
-            keyboardShouldPersistTaps="handled"
             keyExtractor={(item) => item.id.toString()}
             data={tournaments}
             renderItem={({ item }) => {
               return (
                 <TournamentRow
                   item={item}
-                  // setModalItem={setModalItem}
-                  // showModal={show}
-                  showModal={() => setModalVisible(true)}
-                  // modalItem={modalItem}
-                  // showModal={handleShowModal}
+                  showModal={showModal}
+                  showDeleteModal={showDeleteModal}
                 />
               );
             }}
