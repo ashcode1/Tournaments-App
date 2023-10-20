@@ -1,8 +1,9 @@
-import { createStore, applyMiddleware } from 'redux';
+import { legacy_createStore as createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import rootReducer from '../reducers';
+import throttle from '../middleware/throttled';
 
-const middlewares = [thunk];
+const middlewares = [thunk, throttle];
 
 if (__DEV__) {
   const createDebugger = require('redux-flipper').default;

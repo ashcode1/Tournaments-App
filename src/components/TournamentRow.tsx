@@ -43,25 +43,23 @@ const TournamentRow: React.FC<TournamentsRowProps> = ({
     appDispatch(setModalItem(item));
   };
   return (
-    <>
-      <StyledView>
-        <BodyText>Game: {item.game}</BodyText>
-        <BodyText>Name: {item.name}</BodyText>
-        <BodyText>Organizer: {item.organizer}</BodyText>
-        <BodyText>
-          Participants: current-{item.participants.current} max-
-          {item.participants.max}
-        </BodyText>
-        <BodyText>Start date: {item.startDate}</BodyText>
+    <StyledView>
+      <BodyText>Game: {item.game}</BodyText>
+      <BodyText>Name: {item.name}</BodyText>
+      <BodyText>Organizer: {item.organizer}</BodyText>
+      <BodyText>
+        Participants: current-{item.participants.current} max-
+        {item.participants.max}
+      </BodyText>
+      <BodyText>Start date: {item.startDate}</BodyText>
 
-        {item.id === modalItem.id ? (
-          <Button onPress={onUndoEditPress}>UNDO CHANGES</Button>
-        ) : (
-          <Button onPress={onEditPress}>EDIT</Button>
-        )}
-        <Button onPress={onDeletePress}>DELETE</Button>
-      </StyledView>
-    </>
+      {item.id === modalItem.id ? (
+        <Button onPress={onUndoEditPress}>UNDO CHANGES</Button>
+      ) : (
+        <Button onPress={onEditPress}>EDIT</Button>
+      )}
+      <Button onPress={onDeletePress}>DELETE</Button>
+    </StyledView>
   );
 };
 

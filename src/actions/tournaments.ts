@@ -13,17 +13,30 @@ export const GET_TOURNAMENTS_FAILURE = 'GET_TOURNAMENTS_FAILURE';
 export const getTournaments =
   (
     page: number,
-    limit: number
+    limit: number,
+    query?: string
   ): ThunkAction<void, RootState, unknown, TournamentActions> =>
   async (appDispatch: AppDispatch) => {
-    appDispatch({ type: GET_TOURNAMENTS_REQUEST });
+    const millisecs: number = 1000;
+    appDispatch({
+      type: GET_TOURNAMENTS_REQUEST,
+      meta: { throttle: millisecs },
+    });
     fetchWrapper
-      .get(API_TOURNAMENTS_URL(page, limit))
+      .get(API_TOURNAMENTS_URL(page, limit, query))
       .then((data) => {
-        appDispatch({ type: GET_TOURNAMENTS_SUCCESS, payload: { data, page } });
+        appDispatch({
+          type: GET_TOURNAMENTS_SUCCESS,
+          payload: { data, page },
+          meta: { throttle: millisecs },
+        });
       })
       .catch((error) => {
-        appDispatch({ type: GET_TOURNAMENTS_FAILURE, payload: { error } });
+        appDispatch({
+          type: GET_TOURNAMENTS_FAILURE,
+          payload: { error },
+          meta: { throttle: millisecs },
+        });
       });
   };
 

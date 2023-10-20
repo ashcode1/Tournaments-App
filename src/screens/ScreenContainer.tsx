@@ -19,7 +19,10 @@ interface ScreenContainerProps {
   loading: boolean;
   loadingText: string;
   noData: boolean;
-  noDataText: string;
+  noDataText: {
+    title: string;
+    body: string;
+  };
   onRetryPress: () => void;
   error: boolean | string | '';
   headerContent: ReactElement | null;
@@ -45,13 +48,15 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
       <>
         {error ? (
           <StyledView>
-            <BodyText>Something went wrong.</BodyText>
+            <BodyText>Something went wrong!</BodyText>
+            <Spacer />
+            <Button onPress={onRetryPress}>RETRY</Button>
           </StyledView>
         ) : noData ? (
           <StyledView>
-            <BodyText>{noDataText}</BodyText>
+            <BodyText>{noDataText.title}</BodyText>
             <Spacer />
-            <Button onPress={onRetryPress}>RETRY</Button>
+            <BodyText>{noDataText.body}</BodyText>
           </StyledView>
         ) : loading ? (
           <StyledView>

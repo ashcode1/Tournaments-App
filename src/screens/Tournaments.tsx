@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import { FlatList, RefreshControl } from 'react-native';
 
 import theme from '../theme';
-import TournamentRow from '../components/TournamentRow';
 import ScreenContainer from './ScreenContainer';
 import { errorSelector } from '../selectors/errors';
 import { createLoadingSelector } from '../selectors/loading';
@@ -24,15 +23,17 @@ import {
   tournamentsPageSelector,
   tournamentsSelector,
 } from '../selectors/tournaments';
+import Button from '../components/Button';
+import SearchBar from '../components/SearchBar';
 import EditPrompt from '../components/EditPrompt';
 import DeletePrompt from '../components/DeletePrompt';
-import Button from '../components/Button';
+import TournamentRow from '../components/TournamentRow';
 
 const Tournaments: React.FC = (): JSX.Element => {
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] =
     React.useState<boolean>(false);
-
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
 
   const appDispatch = useAppDispatch();
@@ -61,13 +62,18 @@ const Tournaments: React.FC = (): JSX.Element => {
   const showModal = () => setModalVisible(true);
   const showDeleteModal = () => setDeleteModalVisible(true);
 
+  const onSearchBarChangeText = (val: string) => {
+    fetchInitial();
+    setSearchValue(val);
+  };
+
   const limit = 10;
 
-  const fetchInitial = () => appDispatch(getTournaments(1, limit));
+  const fetchInitial = () => appDispatch(getTournaments(1, limit, searchValue));
 
   const onEndReached = () => {
     if (!isLoading && moreToFetch) {
-      appDispatch(getTournaments(page, limit));
+      appDispatch(getTournaments(page, limit, searchValue));
     }
   };
 
@@ -79,11 +85,7 @@ const Tournaments: React.FC = (): JSX.Element => {
   };
 
   React.useEffect(() => {
-    fetchInitial();
-  }, []);
-
-  React.useEffect(() => {
-    if (isRefreshing && isLoading === false) {
+    if (isRefreshing === true && isLoading === false) {
       setIsRefreshing(false);
     }
   }, [isLoading]);
@@ -99,13 +101,23 @@ const Tournaments: React.FC = (): JSX.Element => {
       }
       loadingText="Loading tournaments..."
       noData={Array.isArray(tournaments) && tournaments.length === 0}
-      noDataText="No tournaments found."
+      noDataText={{
+        title: 'No tournaments found!',
+        body: 'Try typing at least 3 letters.',
+      }}
       onRetryPress={onRetryPress}
       error={error}
       headerContent={
-        deleteItem.id !== '' ? (
-          <Button onPress={onUndoDelete}>UNDO DELETE</Button>
-        ) : null
+        <>
+          <SearchBar
+            searchValue={searchValue}
+            setSearchValue={setSearchValue}
+            onChangeText={onSearchBarChangeText}
+          />
+          {deleteItem.id !== '' ? (
+            <Button onPress={onUndoDelete}>UNDO DELETE</Button>
+          ) : null}
+        </>
       }
     >
       <>
@@ -124,7 +136,7 @@ const Tournaments: React.FC = (): JSX.Element => {
         />
         {tournaments?.length > 0 ? (
           <FlatList
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item, index) => index + item.id}
             data={tournaments}
             renderItem={({ item }) => {
               return (
@@ -138,7 +150,7 @@ const Tournaments: React.FC = (): JSX.Element => {
             onEndReached={onEndReached}
             refreshControl={
               <RefreshControl
-                refreshing={isLoading}
+                refreshing={isRefreshing && isLoading}
                 onRefresh={onRefresh}
                 // iOS only
                 tintColor={theme.palette.text.primary}

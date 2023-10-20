@@ -62,6 +62,13 @@ const theme = {
       'text-transform': 'uppercase',
     },
   },
+  icons: {
+    size: {
+      sm: 20,
+      md: 26,
+      lg: 32,
+    },
+  },
   breakpoints: {
     s: '480px',
     m: '768px',
