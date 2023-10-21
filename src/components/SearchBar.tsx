@@ -44,7 +44,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onChangeText={onChangeText}
         defaultValue={searchValue}
         placeholderTextColor={theme.palette.text.primary}
-        autoFocus={true}
       />
       {searchValue !== '' ? (
         <StyledTouchableOp onPress={onXPress}>

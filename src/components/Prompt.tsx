@@ -11,7 +11,7 @@ const PromptContainer = styled.View`
 `;
 
 const PromptMask = styled.View`
-  background: rgba(0, 0, 0, 0.7);
+  background: ${theme.palette.background.alt2};
   position: absolute;
   top: 0px;
   bottom: 0px;

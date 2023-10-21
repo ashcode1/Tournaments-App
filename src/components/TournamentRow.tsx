@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components/native';
@@ -11,17 +12,26 @@ import { formatDate } from '../helpers/dateHelpers';
 import { Tournament } from '../reducers/tournaments';
 import { modalItemSelector } from '../selectors/tournaments';
 import { setModalItem, undoEdit } from '../actions/tournaments';
+import { useWindowDimensions } from 'react-native';
+
+const Container = styled.View<{ width?: string }>`
+  ${(props) => `
+    width: ${props.width ? props.width : '100%'};
+    padding-horizontal: ${theme.spacing(4)};
+    height: 150px;
+  `}
+`;
 
 const StyledView = styled.View`
   height: 150px;
   padding: ${theme.spacing(2)}
   margin-vertical: ${theme.spacing(3)};
-  margin-horizontal: ${theme.spacing(4)};
   background: ${theme.palette.background.alt2}
   border: 1px solid ${theme.palette.secondary.main};
   border-radius: ${theme.borderRadius}
   align-items: center;
   justify-content: space-around;
+  flex: 1;
 `;
 
 const ButtonRow = styled.View`
@@ -32,12 +42,12 @@ const ButtonRow = styled.View`
 
 const ButtonLeft = styled(Button)`
   padding-right: ${theme.spacing()};
-  width: 100px;
+  min-width: 100px;
 `;
 
 const ButtonRight = styled(Button)`
   padding-left: ${theme.spacing()};
-  width: 100px;
+  min-width: 100px;
 `;
 
 interface TournamentsRowProps {
@@ -51,6 +61,12 @@ const TournamentRow: React.FC<TournamentsRowProps> = ({
   showModal,
   showDeleteModal,
 }): JSX.Element => {
+  const { width } = useWindowDimensions();
+
+  const [itemWidth, setItemWidth] = React.useState<string>(
+    calcWidthPercentage()
+  );
+
   const modalItem = useSelector(modalItemSelector);
 
   const appDispatch = useAppDispatch();
@@ -71,20 +87,36 @@ const TournamentRow: React.FC<TournamentsRowProps> = ({
 
   const date = formatDate(item.startDate);
 
-  return (
-    <StyledView>
-      <H6>{item.name}</H6>
-      <BodyText>Start date: {date}</BodyText>
+  React.useEffect(() => {
+    setItemWidth(calcWidthPercentage);
+  }, [width]);
 
-      <ButtonRow>
-        {item.id === modalItem.id ? (
-          <ButtonLeft onPress={onUndoEditPress}>UNDO CHANGES</ButtonLeft>
-        ) : (
-          <ButtonLeft onPress={onEditPress}>EDIT</ButtonLeft>
-        )}
-        <ButtonRight onPress={onDeletePress}>DELETE</ButtonRight>
-      </ButtonRow>
-    </StyledView>
+  function calcWidthPercentage() {
+    let widthPercentage;
+    if (width > 720) {
+      widthPercentage = '50%';
+    } else {
+      widthPercentage = '100%';
+    }
+    return widthPercentage;
+  }
+
+  return (
+    <Container width={itemWidth}>
+      <StyledView>
+        <H6>{item.name}</H6>
+        <BodyText>Start date: {date}</BodyText>
+
+        <ButtonRow>
+          {item.id === modalItem.id ? (
+            <ButtonLeft onPress={onUndoEditPress}>UNDO CHANGES</ButtonLeft>
+          ) : (
+            <ButtonLeft onPress={onEditPress}>EDIT</ButtonLeft>
+          )}
+          <ButtonRight onPress={onDeletePress}>DELETE</ButtonRight>
+        </ButtonRow>
+      </StyledView>
+    </Container>
   );
 };
 

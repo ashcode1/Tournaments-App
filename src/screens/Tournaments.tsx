@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { FlatList, RefreshControl } from 'react-native';
+import { FlatList, RefreshControl, useWindowDimensions } from 'react-native';
 
 import theme from '../theme';
 import ScreenContainer from './ScreenContainer';
@@ -31,8 +31,10 @@ import EditPrompt from '../components/EditPrompt';
 import DeletePrompt from '../components/DeletePrompt';
 import CreatePrompt from '../components/CreatePrompt';
 import TournamentRow from '../components/TournamentRow';
+import Spacer from '../components/Spacer';
 
 const Tournaments: React.FC = (): JSX.Element => {
+  const { width } = useWindowDimensions();
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] =
     React.useState<boolean>(false);
@@ -40,6 +42,7 @@ const Tournaments: React.FC = (): JSX.Element => {
     React.useState<boolean>(false);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
+  const [numColumns, setNumColumns] = React.useState(1);
 
   const appDispatch = useAppDispatch();
 
@@ -106,6 +109,20 @@ const Tournaments: React.FC = (): JSX.Element => {
     }
   }, [isLoading]);
 
+  React.useEffect(() => {
+    setNumColumns(calcNumOfColumns());
+  }, [width]);
+
+  function calcNumOfColumns() {
+    let numOfColumns;
+    if (width > 720) {
+      numOfColumns = 2;
+    } else {
+      numOfColumns = 1;
+    }
+    return numOfColumns;
+  }
+
   return (
     <ScreenContainer
       screenTitle="Faceit Tournaments"
@@ -131,7 +148,10 @@ const Tournaments: React.FC = (): JSX.Element => {
             onChangeText={onSearchBarChangeText}
           />
           {deleteItem.id !== '' ? (
-            <Button onPress={onUndoDelete}>UNDO DELETE</Button>
+            <>
+              <Spacer />
+              <Button onPress={onUndoDelete}>UNDO DELETE</Button>
+            </>
           ) : null}
         </>
       }
@@ -166,6 +186,7 @@ const Tournaments: React.FC = (): JSX.Element => {
           <FlatList
             keyExtractor={(item, index) => index + item.id}
             data={tournaments}
+            numColumns={numColumns}
             renderItem={({ item }) => {
               return (
                 <TournamentRow

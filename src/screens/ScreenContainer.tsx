@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { ActivityIndicator, StatusBar } from 'react-native';
 import styled from 'styled-components/native';
 
+import theme from '../theme';
 import H4 from '../components/H4';
 import Button from '../components/Button';
 import Spacer from '../components/Spacer';
@@ -13,6 +14,11 @@ const StyledView = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
+`;
+
+const Header = styled.View`
+  padding: ${theme.spacing(3)};
+  align-items: center;
 `;
 
 interface ScreenContainerProps {
@@ -48,8 +54,10 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
   return (
     <Container>
       <StatusBar animated={true} barStyle="light-content" />
-      <H4>{screenTitle}</H4>
-      {headerContent}
+      <Header>
+        <H4>{screenTitle}</H4>
+        {headerContent}
+      </Header>
       <>
         {error ? (
           <StyledView>
