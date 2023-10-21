@@ -9,7 +9,9 @@ import { errorSelector } from '../selectors/errors';
 import { createLoadingSelector } from '../selectors/loading';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import {
+  // CREATE_TOURNAMENT,
   GET_TOURNAMENTS,
+  createTournament,
   deleteTournament,
   editTournament,
   getTournaments,
@@ -27,11 +29,14 @@ import Button from '../components/Button';
 import SearchBar from '../components/SearchBar';
 import EditPrompt from '../components/EditPrompt';
 import DeletePrompt from '../components/DeletePrompt';
+import CreatePrompt from '../components/CreatePrompt';
 import TournamentRow from '../components/TournamentRow';
 
 const Tournaments: React.FC = (): JSX.Element => {
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] =
+    React.useState<boolean>(false);
+  const [createModalVisible, setCreateModalVisible] =
     React.useState<boolean>(false);
   const [searchValue, setSearchValue] = React.useState<string>('');
   const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
@@ -42,7 +47,12 @@ const Tournaments: React.FC = (): JSX.Element => {
   const modalItem = useSelector(modalItemSelector);
   const tournaments = useAppSelector(tournamentsSelector);
   const moreToFetch = useAppSelector(moreTournamentsToFetchSelector);
-  const isLoading = useAppSelector(createLoadingSelector([GET_TOURNAMENTS]));
+  const isLoading = useAppSelector(
+    createLoadingSelector([
+      GET_TOURNAMENTS,
+      // CREATE_TOURNAMENT
+    ])
+  );
   const error = useAppSelector(errorSelector([GET_TOURNAMENTS]));
   const deleteItem = useAppSelector(deleteItemSelector);
 
@@ -58,6 +68,8 @@ const Tournaments: React.FC = (): JSX.Element => {
 
   const onSave = (value: string) =>
     appDispatch(editTournament(modalItem.id, value));
+
+  const onCreate = (name: string) => appDispatch(createTournament(name));
 
   const showModal = () => setModalVisible(true);
   const showDeleteModal = () => setDeleteModalVisible(true);
@@ -83,6 +95,10 @@ const Tournaments: React.FC = (): JSX.Element => {
     setIsRefreshing(true);
     fetchInitial();
   };
+
+  React.useEffect(() => {
+    fetchInitial();
+  }, []);
 
   React.useEffect(() => {
     if (isRefreshing === true && isLoading === false) {
@@ -119,6 +135,11 @@ const Tournaments: React.FC = (): JSX.Element => {
           ) : null}
         </>
       }
+      fabConfig={{
+        onPress: () => {
+          setCreateModalVisible(true);
+        },
+      }}
     >
       <>
         <EditPrompt
@@ -132,6 +153,13 @@ const Tournaments: React.FC = (): JSX.Element => {
           visible={deleteModalVisible}
           setVisible={setDeleteModalVisible}
           onDelete={onDelete}
+          onCancel={onCancel}
+        />
+        <CreatePrompt
+          visible={createModalVisible}
+          setVisible={setCreateModalVisible}
+          defaultValue=""
+          onCreate={onCreate}
           onCancel={onCancel}
         />
         {tournaments?.length > 0 ? (

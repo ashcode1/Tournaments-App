@@ -1,5 +1,6 @@
 import { TournamentActions } from '../types/actionTypes/tournamentActionsTypes';
 import {
+  CREATE_TOURNAMENT_SUCCESS,
   DELETE_TOURNAMENT,
   EDIT_TOURNAMENT,
   GET_TOURNAMENTS_SUCCESS,
@@ -20,7 +21,7 @@ export interface Tournament {
 type DeleteItem = Tournament & { index: number };
 
 type TournamentsState = {
-  tournaments: Array<Tournament>;
+  tournaments: Array<Tournament> | null;
   page: number;
   moreToFetch: boolean;
   modalItem: Tournament;
@@ -34,6 +35,7 @@ const initalItem = {
   organizer: '',
   participants: { current: 0, max: 0 },
   startDate: '',
+  index: -1,
 };
 
 const initialState = {
@@ -74,7 +76,7 @@ export default function tournaments(
       return {
         ...state,
         tournaments: updateTournamentsById(
-          state.tournaments,
+          state.tournaments as Array<Tournament>,
           action.payload.id,
           action.payload.value
         ),
@@ -83,7 +85,7 @@ export default function tournaments(
       return {
         ...state,
         tournaments: insertItemById(
-          state.tournaments,
+          state.tournaments as Array<Tournament>,
           action.payload.id,
           state.modalItem
         ),
@@ -92,10 +94,16 @@ export default function tournaments(
     case DELETE_TOURNAMENT:
       return {
         ...state,
-        tournaments: deleteItemById(state.tournaments, action.payload.id),
+        tournaments: deleteItemById(
+          state.tournaments as Array<Tournament>,
+          action.payload.id
+        ),
         deleteItem: {
           ...state.modalItem,
-          index: getIndexById(state.tournaments, action.payload.id),
+          index: getIndexById(
+            state.tournaments as Array<Tournament>,
+            action.payload.id
+          ),
         },
         modalItem: { ...initalItem },
       };
@@ -103,12 +111,22 @@ export default function tournaments(
       return {
         ...state,
         tournaments: insertItemByIndex(
-          state.tournaments,
+          state.tournaments as Array<Tournament>,
           state.deleteItem.index,
           state.deleteItem
         ),
         deleteItem: { ...initalItem },
       };
+    case CREATE_TOURNAMENT_SUCCESS:
+      return isEmptyArray(state.tournaments) || state.tournaments === null
+        ? {
+            ...state,
+            tournaments: [action.payload.data],
+          }
+        : {
+            ...state,
+            tournaments: [action.payload.data, ...state.tournaments],
+          };
     default:
       return state;
   }

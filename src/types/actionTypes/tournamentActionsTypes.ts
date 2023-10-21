@@ -1,5 +1,8 @@
 import { Tournament } from '../../reducers/tournaments';
 import {
+  CREATE_TOURNAMENT_FAILURE,
+  CREATE_TOURNAMENT_REQUEST,
+  CREATE_TOURNAMENT_SUCCESS,
   DELETE_TOURNAMENT,
   EDIT_TOURNAMENT,
   GET_TOURNAMENTS_FAILURE,
@@ -48,6 +51,20 @@ interface UndoDelete {
   type: typeof UNDO_DELETE;
 }
 
+interface CreateTournamentRequest {
+  type: typeof CREATE_TOURNAMENT_REQUEST;
+}
+
+interface CreateTournamentSuccess {
+  type: typeof CREATE_TOURNAMENT_SUCCESS;
+  payload: { data: Tournament };
+}
+
+interface CreateTournamentFailure {
+  type: typeof CREATE_TOURNAMENT_FAILURE;
+  payload: { error: string };
+}
+
 export type TournamentActions =
   | GetTournamentsRequest
   | GetTournamentsSuccess
@@ -56,4 +73,7 @@ export type TournamentActions =
   | EditTournament
   | DeleteTournament
   | UndoEdit
-  | UndoDelete;
+  | UndoDelete
+  | CreateTournamentRequest
+  | CreateTournamentSuccess
+  | CreateTournamentFailure;

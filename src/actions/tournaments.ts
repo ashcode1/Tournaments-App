@@ -1,14 +1,20 @@
 import { ThunkAction } from 'redux-thunk';
 import { fetchWrapper } from '../network';
 import { AppDispatch, RootState } from '../store';
-import { API_TOURNAMENTS_URL } from '../constants/api';
+import { CREATE_TOURNAMENT_URL, GET_TOURNAMENTS_URL } from '../constants/api';
 import { TournamentActions } from '../types/actionTypes/tournamentActionsTypes';
 import { Tournament } from '../reducers/tournaments';
+import { CreateBody } from '../types/requestTypes/createBody';
+
+// Append to any actions with network requests
+const _REQUEST = '_REQUEST';
+const _SUCCESS = '_SUCCESS';
+const _FAILURE = '_FAILURE';
 
 export const GET_TOURNAMENTS = 'GET_TOURNAMENTS';
-export const GET_TOURNAMENTS_REQUEST = 'GET_TOURNAMENTS_REQUEST';
-export const GET_TOURNAMENTS_SUCCESS = 'GET_TOURNAMENTS_SUCCESS';
-export const GET_TOURNAMENTS_FAILURE = 'GET_TOURNAMENTS_FAILURE';
+export const GET_TOURNAMENTS_REQUEST = `${GET_TOURNAMENTS}${_REQUEST}`;
+export const GET_TOURNAMENTS_SUCCESS = `${GET_TOURNAMENTS}${_SUCCESS}`;
+export const GET_TOURNAMENTS_FAILURE = `${GET_TOURNAMENTS}${_FAILURE}`;
 
 export const getTournaments =
   (
@@ -23,7 +29,7 @@ export const getTournaments =
       meta: { throttle: millisecs },
     });
     fetchWrapper
-      .get(API_TOURNAMENTS_URL(page, limit, query))
+      .get(GET_TOURNAMENTS_URL(page, limit, query))
       .then((data) => {
         appDispatch({
           type: GET_TOURNAMENTS_SUCCESS,
@@ -71,3 +77,27 @@ export const UNDO_DELETE = 'UNDO_DELETE';
 export const undoDelete = () => (appDispatch: AppDispatch) => {
   appDispatch({ type: UNDO_DELETE });
 };
+
+export const CREATE_TOURNAMENT = 'CREATE_TOURNAMENT';
+export const CREATE_TOURNAMENT_REQUEST = `${CREATE_TOURNAMENT}${_REQUEST}`;
+export const CREATE_TOURNAMENT_SUCCESS = `${CREATE_TOURNAMENT}${_SUCCESS}`;
+export const CREATE_TOURNAMENT_FAILURE = `${CREATE_TOURNAMENT}${_FAILURE}`;
+
+export const createTournament =
+  (name: string) => (appDispatch: AppDispatch) => {
+    const body: CreateBody = { name };
+    // appDispatch({
+    //   type: CREATE_TOURNAMENT_REQUEST,
+    // });
+    fetchWrapper
+      .post(CREATE_TOURNAMENT_URL, body)
+      .then((data) => {
+        appDispatch({ type: CREATE_TOURNAMENT_SUCCESS, payload: { data } });
+      })
+      .catch((error) => {
+        appDispatch({
+          type: CREATE_TOURNAMENT_FAILURE,
+          payload: { error },
+        });
+      });
+  };

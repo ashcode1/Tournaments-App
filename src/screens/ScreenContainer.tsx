@@ -7,6 +7,7 @@ import Button from '../components/Button';
 import Spacer from '../components/Spacer';
 import Container from '../components/Container';
 import BodyText from '../components/BodyText';
+import Fab from '../components/Fab';
 
 const StyledView = styled.View`
   flex: 1;
@@ -26,6 +27,9 @@ interface ScreenContainerProps {
   onRetryPress: () => void;
   error: boolean | string | '';
   headerContent: ReactElement | null;
+  fabConfig?: {
+    onPress: () => void;
+  };
   children: ReactElement | null;
 }
 
@@ -38,6 +42,7 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
   onRetryPress,
   error,
   headerContent,
+  fabConfig,
   children,
 }): JSX.Element => {
   return (
@@ -68,6 +73,7 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
           children || null
         )}
       </>
+      {fabConfig ? <Fab onPress={fabConfig.onPress} /> : null}
     </Container>
   );
 };

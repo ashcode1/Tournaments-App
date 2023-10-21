@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, X } from 'react-native-feather';
+import { Plus, Search, X } from 'react-native-feather';
 import theme from '../theme';
 
 const { md } = theme.icons.size;
@@ -11,4 +11,8 @@ export const SearchIcon = () => {
 
 export const XIcon = () => {
   return <X stroke={text.primary} width={md} height={md} />;
+};
+
+export const PlusIcon = () => {
+  return <Plus stroke={text.primary} width={md} height={md} />;
 };

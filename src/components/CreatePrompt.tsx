@@ -3,34 +3,33 @@ import React, { Dispatch, SetStateAction } from 'react';
 import CustomPrompt from './Prompt';
 import { validateText } from '../helpers/promptHelpers';
 
-interface EditPromptProps {
+interface CreatePromptProps {
   visible: boolean;
   setVisible: Dispatch<SetStateAction<boolean>>;
   defaultValue: string;
   onCancel: () => void;
-  onSave: (value: string) => void;
+  onCreate: (value: string) => void;
 }
 
-const EditPrompt: React.FC<EditPromptProps> = ({
+const CreatePrompt: React.FC<CreatePromptProps> = ({
   visible,
   setVisible,
   defaultValue,
-  onCancel,
-  onSave,
+  onCreate,
 }): JSX.Element => {
   const [validationMessage, setValidationMessage] = React.useState<string>('');
 
   const onCancelPress = () => {
     setVisible(false);
-    return onCancel();
+    return;
   };
 
   const message =
     'The tournament name must ONLY contain Latin letters, numbers, and spaces, not an empty name or only spaces';
 
-  const onUpdatePress = (value: string) => {
+  const onCreatePress = (value: string) => {
     if (validateText(value) === true) {
-      onSave(value);
+      onCreate(value);
       setVisible(false);
     } else {
       setValidationMessage(message);
@@ -42,7 +41,7 @@ const EditPrompt: React.FC<EditPromptProps> = ({
       <CustomPrompt
         visible={visible}
         validationText={validationMessage}
-        title="Type below to edit name"
+        title="Type new tournament name"
         hasTextInput
         defaultValue={defaultValue}
         operation={[
@@ -51,8 +50,8 @@ const EditPrompt: React.FC<EditPromptProps> = ({
             onPress: onCancelPress,
           },
           {
-            text: 'Update',
-            onPress: onUpdatePress,
+            text: 'Create',
+            onPress: onCreatePress,
           },
         ]}
       />
@@ -60,4 +59,4 @@ const EditPrompt: React.FC<EditPromptProps> = ({
   );
 };
 
-export default EditPrompt;
+export default CreatePrompt;
