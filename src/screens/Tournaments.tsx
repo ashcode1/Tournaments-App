@@ -25,15 +25,24 @@ import {
   tournamentsPageSelector,
   tournamentsSelector,
 } from '../selectors/tournaments';
-import Button from '../components/Button';
 import SearchBar from '../components/SearchBar';
 import EditPrompt from '../components/EditPrompt';
 import DeletePrompt from '../components/DeletePrompt';
 import CreatePrompt from '../components/CreatePrompt';
 import TournamentRow from '../components/TournamentRow';
-import Spacer from '../components/Spacer';
+import { Tournament } from '../reducers/tournaments';
+import { ScreenName } from '../types/screenTypes/ScreenName';
+import { calcNumOfColumns } from '../helpers/layoutHelpers';
 
-const Tournaments: React.FC = (): JSX.Element => {
+export interface TournamentsProps {
+  navigation: {
+    navigate: (screen: string, params: { tournament: Tournament }) => void;
+  };
+}
+
+const Tournaments: React.FC<TournamentsProps> = ({
+  navigation,
+}): JSX.Element => {
   const { width } = useWindowDimensions();
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] =
@@ -50,38 +59,43 @@ const Tournaments: React.FC = (): JSX.Element => {
   const modalItem = useSelector(modalItemSelector);
   const tournaments = useAppSelector(tournamentsSelector);
   const moreToFetch = useAppSelector(moreTournamentsToFetchSelector);
+  const deleteItem = useAppSelector(deleteItemSelector);
+  const error = useAppSelector(errorSelector([GET_TOURNAMENTS]));
   const isLoading = useAppSelector(
     createLoadingSelector([
       GET_TOURNAMENTS,
       // CREATE_TOURNAMENT
     ])
   );
-  const error = useAppSelector(errorSelector([GET_TOURNAMENTS]));
-  const deleteItem = useAppSelector(deleteItemSelector);
 
+  // Prompt methods
   const onCancel = () => appDispatch(undoEdit(modalItem.id));
-
-  const onDelete = () => {
-    appDispatch(deleteTournament(modalItem.id));
-  };
-
-  const onUndoDelete = () => {
-    appDispatch(undoDelete());
-  };
-
+  const onDelete = () => appDispatch(deleteTournament(modalItem.id));
+  const onCreate = (name: string) => appDispatch(createTournament(name));
   const onSave = (value: string) =>
     appDispatch(editTournament(modalItem.id, value));
 
-  const onCreate = (name: string) => appDispatch(createTournament(name));
-
+  // Toggle
   const showModal = () => setModalVisible(true);
   const showDeleteModal = () => setDeleteModalVisible(true);
+  const showCreateModal = () => setCreateModalVisible(true);
 
-  const onSearchBarChangeText = (val: string) => {
-    fetchInitial();
-    setSearchValue(val);
+  // Navigate
+  const onTournamentPress = (tournament: Tournament) => {
+    navigation.navigate(ScreenName.TournamentDetails, { tournament });
   };
 
+  // FAB methods
+  const onFabCreatePress = () => showCreateModal();
+  const onFabRefreshPress = () => appDispatch(undoDelete());
+
+  // Search
+  const onSearchBarChangeText = (val: string) => {
+    setSearchValue(val);
+    appDispatch(getTournaments(1, limit, val));
+  };
+
+  // Fetch & paginate
   const limit = 10;
 
   const fetchInitial = () => appDispatch(getTournaments(1, limit, searchValue));
@@ -91,7 +105,6 @@ const Tournaments: React.FC = (): JSX.Element => {
       appDispatch(getTournaments(page, limit, searchValue));
     }
   };
-
   const onRetryPress = () => fetchInitial();
 
   const onRefresh = () => {
@@ -110,22 +123,11 @@ const Tournaments: React.FC = (): JSX.Element => {
   }, [isLoading]);
 
   React.useEffect(() => {
-    setNumColumns(calcNumOfColumns());
+    setNumColumns(calcNumOfColumns(width));
   }, [width]);
-
-  function calcNumOfColumns() {
-    let numOfColumns;
-    if (width > 720) {
-      numOfColumns = 2;
-    } else {
-      numOfColumns = 1;
-    }
-    return numOfColumns;
-  }
 
   return (
     <ScreenContainer
-      screenTitle="Faceit Tournaments"
       loading={
         // Initial Fetch
         (isLoading && tournaments === null) ||
@@ -147,18 +149,12 @@ const Tournaments: React.FC = (): JSX.Element => {
             setSearchValue={setSearchValue}
             onChangeText={onSearchBarChangeText}
           />
-          {deleteItem.id !== '' ? (
-            <>
-              <Spacer />
-              <Button onPress={onUndoDelete}>UNDO DELETE</Button>
-            </>
-          ) : null}
         </>
       }
       fabConfig={{
-        onPress: () => {
-          setCreateModalVisible(true);
-        },
+        onCreatePress: onFabCreatePress,
+        onRefreshPress: onFabRefreshPress,
+        refreshVisible: deleteItem.id !== '',
       }}
     >
       <>
@@ -193,6 +189,7 @@ const Tournaments: React.FC = (): JSX.Element => {
                   item={item}
                   showModal={showModal}
                   showDeleteModal={showDeleteModal}
+                  onTournamentPress={onTournamentPress}
                 />
               );
             }}

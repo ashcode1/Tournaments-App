@@ -6,6 +6,18 @@ import { SearchIcon, XIcon } from '../icons';
 import Input from './Input';
 import theme from '../theme';
 
+const StyledView = styled.View`
+  background-color: ${theme.palette.background.base};
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledTouchableOp = styled.TouchableOpacity`
+  background-color: ${theme.palette.background.base};
+  justify-content: center;
+  align-items: center;
+`;
+
 interface SearchBarProps {
   searchValue: string;
   setSearchValue: (str: string) => void;
@@ -17,18 +29,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   setSearchValue,
   onChangeText,
 }): JSX.Element => {
-  const StyledView = styled.View`
-    background-color: ${theme.palette.background.base};
-    justify-content: center;
-    align-items: center;
-  `;
-
-  const StyledTouchableOp = styled.TouchableOpacity`
-    background-color: ${theme.palette.background.base};
-    justify-content: center;
-    align-items: center;
-  `;
-
   const onXPress = () => {
     setSearchValue('');
   };
@@ -55,7 +55,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row' },
+  container: { flexDirection: 'row', paddingHorizontal: 16 },
   input: { flex: 1 },
 });
 

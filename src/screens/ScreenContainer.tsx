@@ -1,14 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { ReactElement } from 'react';
-import { ActivityIndicator, StatusBar } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 
-import theme from '../theme';
-import H4 from '../components/H4';
+import Fab from '../components/Fab';
 import Button from '../components/Button';
 import Spacer from '../components/Spacer';
-import Container from '../components/Container';
 import BodyText from '../components/BodyText';
-import Fab from '../components/Fab';
+import Container from '../components/Container';
 
 const StyledView = styled.View`
   flex: 1;
@@ -16,31 +15,26 @@ const StyledView = styled.View`
   justify-content: center;
 `;
 
-const Header = styled.View`
-  padding: ${theme.spacing(3)};
-  align-items: center;
-`;
-
 interface ScreenContainerProps {
-  screenTitle?: string;
-  loading: boolean;
-  loadingText: string;
-  noData: boolean;
-  noDataText: {
+  loading?: boolean;
+  loadingText?: string;
+  noData?: boolean;
+  noDataText?: {
     title: string;
     body: string;
   };
-  onRetryPress: () => void;
-  error: boolean | string | '';
-  headerContent: ReactElement | null;
+  onRetryPress?: () => void;
+  error?: boolean | string | '';
+  headerContent?: ReactElement | null;
   fabConfig?: {
-    onPress: () => void;
+    onCreatePress: () => void;
+    onRefreshPress: () => void;
+    refreshVisible: boolean;
   };
   children: ReactElement | null;
 }
 
 const ScreenContainer: React.FC<ScreenContainerProps> = ({
-  screenTitle,
   loading,
   loadingText,
   noData,
@@ -53,11 +47,7 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
 }): JSX.Element => {
   return (
     <Container>
-      <StatusBar animated={true} barStyle="light-content" />
-      <Header>
-        <H4>{screenTitle}</H4>
-        {headerContent}
-      </Header>
+      {headerContent}
       <>
         {error ? (
           <StyledView>
@@ -67,9 +57,9 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
           </StyledView>
         ) : noData ? (
           <StyledView>
-            <BodyText>{noDataText.title}</BodyText>
+            <BodyText>{noDataText?.title}</BodyText>
             <Spacer />
-            <BodyText>{noDataText.body}</BodyText>
+            <BodyText>{noDataText?.body}</BodyText>
           </StyledView>
         ) : loading ? (
           <StyledView>
@@ -81,7 +71,13 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
           children || null
         )}
       </>
-      {fabConfig ? <Fab onPress={fabConfig.onPress} /> : null}
+      {fabConfig ? (
+        <Fab
+          onCreatePress={fabConfig.onCreatePress}
+          onRefreshPress={fabConfig.onRefreshPress}
+          refreshVisible={fabConfig.refreshVisible}
+        />
+      ) : null}
     </Container>
   );
 };

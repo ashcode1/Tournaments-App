@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ThunkMiddleware } from 'redux-thunk';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 const throttled: { [key: string]: boolean } = {};
 
 const throttledMiddleware: ThunkMiddleware =

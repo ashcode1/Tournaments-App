@@ -76,6 +76,10 @@ const theme = {
     xl: '1200px',
     xxl: '1620px',
   },
+  percentage: {
+    50: '50%',
+    100: '100%',
+  },
 };
 
 export default theme;
