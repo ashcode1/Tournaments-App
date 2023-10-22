@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { FlatList, RefreshControl, useWindowDimensions } from 'react-native';
+import Animated, { FadeIn, Layout } from 'react-native-reanimated';
+import { RefreshControl, useWindowDimensions } from 'react-native';
 
 import theme from '../theme';
 import ScreenContainer from './ScreenContainer';
@@ -179,18 +180,23 @@ const Tournaments: React.FC<TournamentsProps> = ({
           onCancel={onCancel}
         />
         {tournaments?.length > 0 ? (
-          <FlatList
-            keyExtractor={(item, index) => index + item.id}
+          <Animated.FlatList
             data={tournaments}
             numColumns={numColumns}
-            renderItem={({ item }) => {
+            itemLayoutAnimation={Layout.springify()}
+            renderItem={({ item, index }) => {
               return (
-                <TournamentRow
-                  item={item}
-                  showModal={showModal}
-                  showDeleteModal={showDeleteModal}
-                  onTournamentPress={onTournamentPress}
-                />
+                <Animated.View
+                  key={item.id}
+                  entering={FadeIn.delay(index * 100)}
+                >
+                  <TournamentRow
+                    item={item}
+                    showModal={showModal}
+                    showDeleteModal={showDeleteModal}
+                    onTournamentPress={onTournamentPress}
+                  />
+                </Animated.View>
               );
             }}
             onEndReached={onEndReached}
