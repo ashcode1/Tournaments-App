@@ -1,3 +1,24 @@
+# Faceit Mobile Tech Challenge - Ashley Hopkins
+
+## Introduction
+
+This project builds upon the existing React Native application with Typescript and Redux, aiming to fulfill the seven core requirements outlined in the challenge. In addition to addressing the primary objectives, the application introduces several notable enhancements to enrich the user experience and improve overall functionality.
+
+## Enhancements and Technologies
+
+- **React Navigation**: Implemented to introduce a `Tournament Details` screen, providing users with a detailed view and additional information pertaining to specific Tournaments.
+- **React Native Reanimated**: Utilised to implement smooth and aesthetically pleasing animations within the FlatList component, contributing to a more dynamic and engaging user interface.
+- **React Native Feather Icons**: Integrated to add visually appealing icons, enhancing the aesthetic appeal and user experience on the `Tournament Details` screen.
+
+## Additional Dependencies
+
+- **[Lodash](https://www.npmjs.com/package/lodash)**: A modern JavaScript utility library delivering modularity, performance & extras, employed for various helper functions.
+- **[Date Fns](https://www.npmjs.com/package/date-fns)**: A comprehensive, yet simple and consistent toolset for manipulating JavaScript dates, utilized to enhance date and time manipulation capabilities.
+- **[React Native Prompt](https://www.npmjs.com/package/react-native-prompt)**: Initially integrated for prompt dialog functionalities, though it was subsequently replaced with a custom prompt component tailored to the application’s specific needs.
+- **[React Native Feather Icons](https://www.npmjs.com/package/react-native-feather)**: A collection of simply beautiful open-source icons from Feather, providing a wide range of icon options to enhance the visual experience across the application.
+
+##
+
 # Mobile Coding Challenge
 
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli) and has addtional libraries included:
