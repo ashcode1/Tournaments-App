@@ -33,7 +33,10 @@ import CreatePrompt from '../components/CreatePrompt';
 import TournamentRow from '../components/TournamentRow';
 import { Tournament } from '../reducers/tournaments';
 import { ScreenName } from '../types/screenTypes/ScreenName';
-import { calcNumOfColumns } from '../helpers/layoutHelpers';
+import {
+  calcNumOfColumns,
+  calcWidthPercentage,
+} from '../helpers/layoutHelpers';
 
 export interface TournamentsProps {
   navigation: {
@@ -53,7 +56,9 @@ const Tournaments: React.FC<TournamentsProps> = ({
   const [searchValue, setSearchValue] = React.useState<string>('');
   const [isRefreshing, setIsRefreshing] = React.useState<boolean>(false);
   const [numColumns, setNumColumns] = React.useState(1);
-
+  const [itemWidth, setItemWidth] = React.useState<string>(
+    calcWidthPercentage(width)
+  );
   const appDispatch = useAppDispatch();
 
   const page = useAppSelector(tournamentsPageSelector);
@@ -125,6 +130,7 @@ const Tournaments: React.FC<TournamentsProps> = ({
 
   React.useEffect(() => {
     setNumColumns(calcNumOfColumns(width));
+    setItemWidth(calcWidthPercentage(width));
   }, [width]);
 
   return (
@@ -189,6 +195,7 @@ const Tournaments: React.FC<TournamentsProps> = ({
                 <Animated.View
                   key={item.id}
                   entering={FadeIn.delay(index * 100)}
+                  style={{ width: itemWidth }}
                 >
                   <TournamentRow
                     item={item}

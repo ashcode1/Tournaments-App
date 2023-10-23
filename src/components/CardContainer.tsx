@@ -4,14 +4,11 @@ import styled from 'styled-components/native';
 import theme from '../theme';
 
 const StyledTouchableOp = styled.TouchableOpacity<{
-  width?: string;
   height?: number;
 }>`
   ${(props) => `
-    width: ${props.width ? props.width : '100%'};
     height: ${props.height ? props.height + 'px' : '150px'};
     padding-horizontal: ${theme.spacing(4)};
-
   `}
 `;
 
@@ -52,7 +49,7 @@ const CardContainer: React.FC<CardContainerProps> = ({
   children,
 }): JSX.Element => {
   return onPress ? (
-    <StyledTouchableOp onPress={onPress} width={width} height={height}>
+    <StyledTouchableOp onPress={onPress}>
       <InnerContainer>{children}</InnerContainer>
     </StyledTouchableOp>
   ) : (
