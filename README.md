@@ -1,4 +1,4 @@
-# Faceit Mobile Tech Challenge - Ashley Hopkins
+# Tournaments App
 
 ## Introduction
 
